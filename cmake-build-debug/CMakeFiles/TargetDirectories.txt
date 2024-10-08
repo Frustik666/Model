@@ -1,0 +1,3 @@
+/home/ivang/Model/cmake-build-debug/CMakeFiles/Model.dir
+/home/ivang/Model/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ivang/Model/cmake-build-debug/CMakeFiles/rebuild_cache.dir
