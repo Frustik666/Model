@@ -145,44 +145,45 @@ int get_feedkf() {
     return r;
 }
 
-void set_k(int& k) {
-    std::cout << "Enter k: \n";
-    std::cin >> k;
+int k, m, s;
+std::vector<int> prices(7), amount(7), fine(7), feed_kf(7);
+std::vector<Pond> ponds(7);
+
+void set_k(int k0) {
+    k = k0;
 }
 
-void set_m(int& m) {
-    std::cout << "Enter m: \n";
-    std::cin >> m;
+void set_m(int m0) {
+    m = m0;
 }
 
-void set_balance(int& s) {
-    std::cout << "Enter the starting balance: \n";
-    std::cin >> s;
+void set_balance(int s0) {
+    s = s0;
 }
 
-void set_number(int& n, int i) {
-    std::cout << "Set the number of fish in the " << i + 1 << " pond: \n";
-    std::cin >> n;
-}
+//0 - start, 1 - amount, 2 - price, 3 - feed
 
-void set_amount(int& a, int i) {
-    std::cout << "Enter the needed amount of fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-    std::cin >> a;
-}
-
-void set_fine(int& f, int i) {
-    std::cout << "Enter the fine for pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-    std::cin >> f;
-}
-
-void set_feed(int& kf, int i) {
-    std::cout << "Enter the cost of dry food for fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-    std::cin >> kf;
-}
-
-void set_price(int& p, int i) {
-    std::cout << "Enter the price of fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-    std::cin >> p;
+void set_contrct(std::vector<std::vector<int>>& cont) {
+    for (int i = 0; i < (int)cont.size(); ++i) {
+        int l = cont[i][0];
+        if (l == -1) {
+            l = get_amount();
+        }
+        ponds[i].set_ny(l);
+        ponds[i].set_na(0);
+        amount[i] = cont[i][1];
+        if (amount[i] == -1) {
+            amount[i] = get_col();
+        }
+        prices[i] = cont[i][2];
+        if (prices[i] == -1) {
+            prices[i] = get_price();
+        }
+        feed_kf[i] = cont[i][3];
+        if (feed_kf[i] == -1) {
+            feed_kf[i] = get_feedkf();
+        }
+    }
 }
 
 void run() {
@@ -191,48 +192,14 @@ void run() {
                                   "water poisoning", "storm", "zombie apocalypse", "fish tornado"};
     std::shuffle(names.begin(), names.end(), std::random_device());
     std::shuffle(accs.begin(), accs.end(), std::random_device());
-    std::vector<Pond> ponds(7);
     for (int i = 0; i < 7; ++i) {
         ponds[i].set_name(names[i]);
         ponds[i].set_ind(i);
     }
-    int k, m;
-    set_k(k);
-    set_m(m);
     while ((int)ponds.size() > k) ponds.pop_back();
     std::vector<int> pos(k);
     std::iota(pos.begin(), pos.end(), 0);
-    int s;
-    set_balance(s);
-    for (int i = 0; i < k; ++i) {
-        int l;
-        set_number(l, i);
-        if (l == -1) {
-            l = get_amount();
-        }
-        ponds[i].set_ny(l);
-        ponds[i].set_na(0);
-    }
     int n = m / 3;
-    std::vector<int> prices(k), amount(k), fine(k), feed_kf(k);
-    for (int i = 0; i < k; ++i) {
-        set_amount(amount[i], i);
-        if (amount[i] == -1) {
-            amount[i] = get_col();
-        }
-        set_fine(fine[i], i);
-        if (fine[i] == -1) {
-            fine[i] = get_fine();
-        }
-        set_feed(feed_kf[i], i);
-        if (feed_kf[i] == -1) {
-            feed_kf[i] = get_feedkf();
-        }
-        set_price(prices[i], i);
-        if (prices[i] == -1) {
-            prices[i] = get_price() + feed_kf[i];
-        }
-    }
     int cns = rd() % n + 1;
     std::vector<std::vector<Accident>> tms(n);
     for (int i = 0; i < cns; ++i) {
