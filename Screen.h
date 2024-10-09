@@ -24,11 +24,14 @@ private slots:
     void goToMain();
     void toSettings();
     void toModel();
+    void PtoModel();
     void goToPonds();
     void goToTable();
     void next();
     void back();
     void drawFish();
+    void dlt();
+    void step();
 
  private:
      int ind_, col_;
@@ -40,8 +43,9 @@ private slots:
      Window* house_;
      Window* table_;
      Window* pond_;
+     Window* end_;
      std::vector<std::string> fishes_;
-    QTimer* timer_;
+    QTimer *timer_, *del_;
 
 
 };

@@ -7,9 +7,14 @@ std::mt19937 rnd(std::chrono::high_resolution_clock::now().time_since_epoch().co
 
 Screen::Screen(): QMainWindow() {}
 
+std::queue<std::pair<Label*, QMovie*> > del;
+
 Screen::Screen(int length, int height): QMainWindow() {
     timer_ = new QTimer(this);
+    del_ = new QTimer(this);
+    connect(del_, SIGNAL(timeout()), this, SLOT(dlt()));
     connect(timer_, SIGNAL(timeout()), this, SLOT(drawFish()));
+
     int id = QFontDatabase::addApplicationFont("C:/Users/ASUS/Model/resources/RogerScriptC Regular.otf");
     QString font = QFontDatabase::applicationFontFamilies(id).at(0);
     ind_ = 0;
@@ -19,12 +24,14 @@ Screen::Screen(int length, int height): QMainWindow() {
     settings_ = new Window(length, height);
     house_ = new Window(length, height);
     table_ = new Window(length, height);
+    end_ = new Window(length, height);
     now_ = main_;
     QPixmap back("C:/Users/ASUS/Model/resources/House.png");
     back = back.scaled(main_->size(), Qt::IgnoreAspectRatio);
     QPalette palette;
-    palette.setBrush(QPalette::Window, back);
+    palette.setBrush(QPalette::Window,back);
     main_->setPalette(palette);
+    end_->setPalette(palette);
 
     auto label = new QLabel(main_);
     main_->addItem("START", label);
@@ -55,15 +62,15 @@ Screen::Screen(int length, int height): QMainWindow() {
                         "}");
     connect(play, SIGNAL(clicked()), this, SLOT(play()));
 
-    auto history = new QPushButton(main_);
-    main_->addItem("HISTORY", history);
-    history->setGeometry(333, 300, 333, 70);
-    history->setText("ИСТОРИЯ");
-    history->setFont({font, 25});
-    history->setStyleSheet("QPushButton {"
-                        "background-color: rgba(41, 234, 247, 50);"
-                        "}");
-    connect(history, SIGNAL(clicked()), this, SLOT(toHistory()));
+//    auto history = new QPushButton(main_);
+//    main_->addItem("HISTORY", history);
+//    history->setGeometry(333, 300, 333, 70);
+//    history->setText("ИСТОРИЯ");
+//    history->setFont({font, 25});
+//    history->setStyleSheet("QPushButton {"
+//                        "background-color: rgba(41, 234, 247, 50);"
+//                        "}");
+//    connect(history, SIGNAL(clicked()), this, SLOT(toHistory()));
 
     auto exit = new QPushButton(main_);
     main_->addItem("EXIT", exit);
@@ -174,6 +181,11 @@ Screen::Screen(int length, int height): QMainWindow() {
     desk->setMask(ds.mask());
     connect(desk, SIGNAL(mousePressedSignal()), this, SLOT(goToTable()));
 
+    auto lamp = new Label(house_);
+    house_->addItem("desk", lamp);
+    lamp->setGeometry(743, 392, 40, 80);
+    connect(lamp, SIGNAL(mousePressedSignal()), this, SLOT(step()));
+
     pond_ = new Window(main_->size().width(), main_->size().height());
     QPixmap back3("C:/Users/ASUS/Model/resources/pound.png");
     back3 = back3.scaled(main_->size(), Qt::IgnoreAspectRatio);
@@ -210,17 +222,42 @@ Screen::Screen(int length, int height): QMainWindow() {
                           "background-color: rgba(41, 234, 247, 50);"
                           "}");
 
+
     ds = ds.scaled(main_->size(), Qt::IgnoreAspectRatio);
     palette.setBrush(QPalette::Window, ds);
     table_->setPalette(palette);
+    auto goHome = new Label(table_);
+    goHome->setGeometry(621, 572,  160, 70);
+    connect(goHome, SIGNAL(mousePressedSignal()), this, SLOT(PtoModel()));
 
-    //timer_->start(1000);
+
+    auto labelE = new QLabel(end_);
+    end_->addItem("PLAY", labelE);
+    labelE->setGeometry(174, 42, 656, 120);
+    labelE->setFont(QFont(font, 25));
+    labelE->setAlignment(Qt::AlignCenter);
+    labelE->setText("МОДЕЛИРОВАНИЕ РЫБОВОДЧЕСКОГО ХОЗЯЙСТВА");
+    labelE->setStyleSheet("QLabel {"
+                          "background-color: rgba(41, 234, 247, 50);"
+                          "}");
+
+
+    auto sunE = new Label(end_);
+    end_->addItem("SUN", sunE);
+    sunE->setGeometry(0, 0, 150, 150);
+    sunE->setMovie(sunG);
+    connect(sunM, SIGNAL(mousePressedSignal()), this, SLOT(goToMain()));
+
 }
 
 void Screen::play() {
     now_->hide();
     now_ = start_;
     render();
+}
+
+void Screen::step() {
+
 }
 
 void Screen::toHistory() {
@@ -240,9 +277,47 @@ void Screen::goToMain() {
 }
 
 void Screen::toModel() {
-    now_->hide();
-    now_ = house_;
-    now_->show();
+    bool f = false;
+    std::vector<std::vector<int> > par(
+            dynamic_cast<QTextEdit*>(start_->getItem("PONDS"))->toPlainText().split(" ")[0].toInt(),
+            std::vector<int>(4));
+    for (int i = 0; i < par.size(); ++i) {
+        QString ncol = dynamic_cast<QTextEdit*>(settings_->getItem("FISH" + std::to_string(i)))->toPlainText();
+        if (ncol.size() == 1 && ncol[0] == '0') par[i][0] = 0;
+        else if (ncol.split(" ")[0].toInt() == 0) {
+            par[i][0] = -1, f = true;
+        } else par[i][0] = ncol.split(" ")[0].toInt();
+        int col = dynamic_cast<QTextEdit*>(settings_->getItem(
+                "COLFISH" + std::to_string(i)))->toPlainText().split(" ")[0].toInt();
+        if (col == 0) par[i][1] = -1, f = true;
+        else par[i][1] = col;
+        int cost = dynamic_cast<QTextEdit*>(settings_->getItem(
+                "PRICEFISH" + std::to_string(i)))->toPlainText().split(" ")[0].toInt();
+        if (cost == 0) par[i][2] = -1, f = true;
+        else par[i][2] = col;
+        int food = dynamic_cast<QTextEdit*>(settings_->getItem(
+                "FOODFISH" + std::to_string(i)))->toPlainText().split(" ")[0].toInt();
+        if (food == 0) par[i][3] = -1, f = true;
+        else par[i][3] = col;
+
+        if (f) {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, QString::fromUtf8("Сообщение"),
+                                          QString::fromUtf8(
+                                                  "есть некорректно заполненные поля, они будут заданы программой.\n"
+                                                  "Продолжить?"),
+                                          QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+            if (reply == QMessageBox::Yes) {
+                now_->hide();
+                now_ = house_;
+                now_->show();
+            }
+            return;
+        }
+        now_->hide();
+        now_ = house_;
+        now_->show();
+    }
 }
 
 void Screen::goToTable() {
@@ -256,51 +331,94 @@ void Screen::goToPonds() {
     now_ = pond_;
     now_->show();
     timer_->start(1000);
+    del_->start(4000);
 }
 
 void Screen::back() {
+    timer_->stop();
+    del_->stop();
+    now_->hide();
     --ind_;
+    while (!del.empty()) {
+        dlt();
+    }
     if (ind_ < 0) {
-        toModel();
+        now_ = house_;
+        now_->show();
         return;
     }
     auto lb = dynamic_cast<QLabel*>(pond_->getItem("NUM"));
     lb->setText(QString::number(ind_ + 1));
     lb->update();
         dynamic_cast<QPushButton*>(pond_->getItem("NEXT"))->setEnabled(true);
-    now_->hide();
     now_->show();
+    timer_->start(1000);
+    del_->start(4000);
 }
 
 void Screen::next() {
+    timer_->stop();
+    now_->hide();
     ++ind_;
+    while (!del.empty()) {
+        dlt();
+    }
     auto lb = dynamic_cast<QLabel*>(pond_->getItem("NUM"));
     lb->setText(QString::number(ind_ + 1));
     lb->update();
     if (ind_ == col_) {
         dynamic_cast<QPushButton*>(pond_->getItem("NEXT"))->setEnabled(false);
     }
+    now_->show();
+    timer_->start(1000);
+}
+
+void Screen::PtoModel() {
     now_->hide();
+    now_ = house_;
     now_->show();
 }
 
 void Screen::drawFish() {
+
     now_->hide();
-    int y = rnd() % 16;
-    bool side = rnd();
-    bool isY = rnd();
+    int y = rnd() % 8;
+    bool side = rnd( ) % 2;
+    bool isY = rnd() % 2;
     auto fish = new Label(pond_);
-    fish->setGeometry(1000, y * 50, 100, 50);
-    auto *Fish = new QMovie("C:/Users/ASUS/Model/resources/fish" + QString::number(ind_ + 1) + ".gif");
-    fish->setMovie(Fish);
-    Fish->setScaledSize(fish->size());
-    Fish->start();
-    auto* an = new QPropertyAnimation(fish, "pos");
-    an->setDuration(3000);
-    an->setStartValue(fish->pos());
-    an->setEndValue(QPoint(-200, y * 50));
-    an->start();
+    if (side) {
+        fish->setGeometry(1200, y * 100, 100 * (1 + isY), 50 * (1 + isY));
+        auto *Fish = new QMovie("C:/Users/ASUS/Model/resources/fish" + QString::number(ind_ + 1) + ".gif");
+        del.push({fish, Fish});
+        fish->setMovie(Fish);
+        Fish->setScaledSize(fish->size());
+        Fish->start();
+        auto *an = new QPropertyAnimation(fish, "pos");
+        an->setDuration(3000);
+        an->setStartValue(fish->pos());
+        an->setEndValue(QPoint(-200, y * 100));
+        an->start();
+    } else {
+        fish->setGeometry(-200, y * 100, 100 * (1 + isY), 50 * (1 + isY));
+        auto *Fish = new QMovie("C:/Users/ASUS/Model/resources/fish" + QString::number(ind_ + 1) + "r.gif");
+        del.push({fish, Fish});
+        fish->setMovie(Fish);
+        Fish->setScaledSize(fish->size());
+        Fish->start();
+        auto *an = new QPropertyAnimation(fish, "pos");
+        an->setDuration(3000);
+        an->setStartValue(fish->pos());
+        an->setEndValue(QPoint(1200, y * 100));
+        an->start();
+    }
     now_->show();
+}
+
+void Screen::dlt() {
+    if (del.empty()) return;
+    delete del.front().first;
+    delete del.front().second;
+    del.pop();
 }
 
 void Screen::toSettings() {
@@ -337,7 +455,6 @@ void Screen::toSettings() {
     QString font = QFontDatabase::applicationFontFamilies(id).at(0);
     fishes_ =  {"ОСЁТР", "ТУНЕЦ", "КАРП", "ДЕКОР", "", "", ""};
     for (int i = 0; i < colPounds; ++i) {
-
         auto getCapital = new QTextEdit(settings_);
         settings_->addItem("FISH" + std::to_string(i), getCapital);
         getCapital->setGeometry(100, 150 + i * 70, 180, 50);
@@ -386,6 +503,8 @@ void Screen::toSettings() {
     now_->hide();
     now_ = settings_;
     now_->show();
+
+
 }
 
 
