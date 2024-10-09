@@ -1,0 +1,5 @@
+C:/Users/ASUS/Model/cmake-build-debug/CMakeFiles/Model.dir
+C:/Users/ASUS/Model/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/ASUS/Model/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/ASUS/Model/cmake-build-debug/CMakeFiles/Model_autogen_timestamp_deps.dir
+C:/Users/ASUS/Model/cmake-build-debug/CMakeFiles/Model_autogen.dir
