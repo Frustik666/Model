@@ -55,12 +55,6 @@ build CMakeFiles/Model.dir/backend.cpp.o: CXX_COMPILER__Model_unscanned_Debug /h
   OBJECT_DIR = CMakeFiles/Model.dir
   OBJECT_FILE_DIR = CMakeFiles/Model.dir
 
-build CMakeFiles/Model.dir/frontend.cpp.o: CXX_COMPILER__Model_unscanned_Debug /home/ivang/Model/frontend.cpp || cmake_object_order_depends_target_Model
-  DEP_FILE = CMakeFiles/Model.dir/frontend.cpp.o.d
-  FLAGS = -g -std=gnu++23 -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles/Model.dir
-  OBJECT_FILE_DIR = CMakeFiles/Model.dir
-
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Model
@@ -69,7 +63,7 @@ build CMakeFiles/Model.dir/frontend.cpp.o: CXX_COMPILER__Model_unscanned_Debug /
 #############################################
 # Link the executable Model
 
-build Model: CXX_EXECUTABLE_LINKER__Model_Debug CMakeFiles/Model.dir/backend.cpp.o CMakeFiles/Model.dir/frontend.cpp.o
+build Model: CXX_EXECUTABLE_LINKER__Model_Debug CMakeFiles/Model.dir/backend.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/Model.dir
   POST_BUILD = :

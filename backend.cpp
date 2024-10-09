@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
-
-std::mt19937 rnd(time(nullptr));
+#include "backend.h"
 
 int rd() {
     return abs((int)(rnd()));
@@ -21,118 +20,100 @@ double get_d() {
     return r / 100.0;
 }
 
-class Pond {
-public:
-    Pond(double a = get_a(), double b = get_b(), double d = get_d(), std::string n = "none", std::string p = "no photo") :
-    a(a), b(b), d(d), name(std::move(n)), photo(std::move(p)) {}
+Pond::Pond(double a, double b, double d, std::string n, std::string p) :
+a(a), b(b), d(d), name(std::move(n)), photo(std::move(p)) {}
 
-    Pond(const Pond& other) : a(other.a), b(other.b), d(other.b), ind(other.ind), q(other.q), na(other.na), ny(other.ny),
-                              price(other.price), name(other.name), photo(other.photo) {}
+Pond::Pond(const Pond& other) : a(other.a), b(other.b), d(other.b), ind(other.ind), q(other.q), na(other.na), ny(other.ny),
+                          price(other.price), name(other.name), photo(other.photo) {}
 
-    void set_price(int p) {
-        price = p;
-    }
+void Pond::set_price(int p) {
+    price = p;
+}
 
-    void set_feed_kf(int qq) {
-        q = qq;
-    }
+void Pond::set_feed_kf(int qq) {
+    q = qq;
+}
 
-    void set_name(std::string s) {
-        name = std::move(s);
-    }
+void Pond::set_name(std::string s) {
+    name = std::move(s);
+}
 
-    void set_ny(int n) {
-        ny = n;
-    }
+void Pond::set_ny(int n) {
+    ny = n;
+}
 
-    void set_na(int n) {
-        na = n;
-    }
+void Pond::set_na(int n) {
+    na = n;
+}
 
-    void reduce(double perc) {
-        na = na * (1.0 - perc);
-        ny = ny * (1.0 - perc);
-    }
+void Pond::reduce(double perc) {
+    na = na * (1.0 - perc);
+    ny = ny * (1.0 - perc);
+}
 
-    std::string get_name() {
-        return name;
-    }
+std::string Pond::get_name() {
+    return name;
+}
 
-    void iterate() {
-//        std::cout << "it " << na << " "<< ny << " " << a << " " << b << " " << d << "\n";
-        int prev = ny;
-        ny = a * na;
-        na = std::max(0.0, na + b * prev - d * na);
-//        std::cout << "ti " << na << " "<< ny << "\n";
-    }
+void Pond::iterate() {
+    int prev = ny;
+    ny = a * na;
+    na = std::max(0.0, na + b * prev - d * na);
+}
 
-    double cmp_value() {
-        return (a + b - d) * price / q;
-    }
+double Pond::cmp_value() {
+    return (a + b - d) * price / q;
+}
 
-    int get_price() {
-        return price;
-    }
+int Pond::get_price() {
+    return price;
+}
 
-    int get_ny() {
-        return ny;
-    }
+int Pond::get_ny() {
+    return ny;
+}
 
-    int get_na() {
-        return na;
-    }
+int Pond::get_na() {
+    return na;
+}
 
-    void set_ind(int i) {
-        ind = i;
-    }
+void Pond::set_ind(int i) {
+    ind = i;
+}
 
-    int get_ind() {
-        return ind;
-    }
+int Pond::get_ind() {
+    return ind;
+}
 
-    int feed_price() {
-        return q / 2 * ny + q * na;
-    }
-private:
-    int na, ny, price, q, ind;
-    std::string name, photo;
-    double a, b, d;
-};
+int Pond::feed_price() {
+    return q / 2 * ny + q * na;
+}
+
 
 double gt_perc() {
     int p = rd() % 11 + 10;
     return 1.0 * p / 100.0;
 }
 
-class Accident {
-public:
-    Accident(double perc = gt_perc()) : perc(perc) {}
+Accident::Accident(double perc) : perc(perc) {}
 
-    void set_name(std::string nm) {
-        name = std::move(nm);
-    }
+void Accident::set_name(std::string nm) {
+    name = std::move(nm);
+}
 
-    std::string get_name() {
-        return name;
-    }
+std::string Accident::get_name() {
+    return name;
+}
 
-    double get_perc() {
-        perc = gt_perc();
-        return perc;
-    }
+double Accident::get_perc() {
+    perc = gt_perc();
+    return perc;
+}
 
-private:
-    double perc;
-    std::string name;
-};
 
 bool operator < (Pond a, Pond b) {
     return a.cmp_value() > b.cmp_value();
 }
-
-std::vector<std::string> names{"Cod", "Carp", "Salmon", "Trout", "Catfish", "Shark", "Clownfish"};
-std::vector<std::string> accs{"fever", "temperature fluctuations", "frosts", "poaching",
-                              "water poisoning", "storm", "zombie apocalypse", "fish tornado"};
 
 double get_dif() {
     int r = rd() % 41 + 80;
@@ -205,6 +186,9 @@ void set_price(int& p, int i) {
 }
 
 void run() {
+    std::vector<std::string> names{"Cod", "Carp", "Salmon", "Trout", "Catfish", "Shark", "Clownfish"};
+    std::vector<std::string> accs{"fever", "temperature fluctuations", "frosts", "poaching",
+                                  "water poisoning", "storm", "zombie apocalypse", "fish tornado"};
     std::shuffle(names.begin(), names.end(), std::random_device());
     std::shuffle(accs.begin(), accs.end(), std::random_device());
     std::vector<Pond> ponds(7);
@@ -316,7 +300,7 @@ void run() {
             }
         }
         s -= fn;
-        std::cout << "Your balance after the " << i + 1 << " week is " << s << "!\n";
+        std::cout << "Your balance after the " << i + 1 << " week is " << std::max(0, s) << "!\n";
         if (s < 0) {
             std::cout << "You're a bankrupt((\n";
             return;
