@@ -3,4 +3,5 @@ project(Model)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(Model backend.cpp)
+add_executable(Model backend.cpp
+)

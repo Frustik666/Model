@@ -164,7 +164,47 @@ int get_feedkf() {
     return r;
 }
 
-signed main() {
+void set_k(int& k) {
+    std::cout << "Enter k: \n";
+    std::cin >> k;
+}
+
+void set_m(int& m) {
+    std::cout << "Enter m: \n";
+    std::cin >> m;
+}
+
+void set_balance(int& s) {
+    std::cout << "Enter the starting balance: \n";
+    std::cin >> s;
+}
+
+void set_number(int& n, int i) {
+    std::cout << "Set the number of fish in the " << i + 1 << " pond: \n";
+    std::cin >> n;
+}
+
+void set_amount(int& a, int i) {
+    std::cout << "Enter the needed amount of fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
+    std::cin >> a;
+}
+
+void set_fine(int& f, int i) {
+    std::cout << "Enter the fine for pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
+    std::cin >> f;
+}
+
+void set_feed(int& kf, int i) {
+    std::cout << "Enter the cost of dry food for fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
+    std::cin >> kf;
+}
+
+void set_price(int& p, int i) {
+    std::cout << "Enter the price of fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
+    std::cin >> p;
+}
+
+void run() {
     std::shuffle(names.begin(), names.end(), std::random_device());
     std::shuffle(accs.begin(), accs.end(), std::random_device());
     std::vector<Pond> ponds(7);
@@ -173,18 +213,16 @@ signed main() {
         ponds[i].set_ind(i);
     }
     int k, m;
-    std::cout << "Enter k && m: \n";
-    std::cin >> k >> m;
+    set_k(k);
+    set_m(m);
     while ((int)ponds.size() > k) ponds.pop_back();
     std::vector<int> pos(k);
     std::iota(pos.begin(), pos.end(), 0);
-    std::cout << "Enter the starting balance: \n";
     int s;
-    std::cin >> s;
+    set_balance(s);
     for (int i = 0; i < k; ++i) {
-        std::cout << "Set the number of fish in the " << i + 1 << " pond: \n";
         int l;
-        std::cin >> l;
+        set_number(l, i);
         if (l == -1) {
             l = get_amount();
         }
@@ -194,23 +232,19 @@ signed main() {
     int n = m / 3;
     std::vector<int> prices(k), amount(k), fine(k), feed_kf(k);
     for (int i = 0; i < k; ++i) {
-        std::cout << "Enter the needed amount of fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-        std::cin >> amount[i];
+        set_amount(amount[i], i);
         if (amount[i] == -1) {
             amount[i] = get_col();
         }
-        std::cout << "Enter the fine for pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-        std::cin >> fine[i];
+        set_fine(fine[i], i);
         if (fine[i] == -1) {
             fine[i] = get_fine();
         }
-        std::cout << "Enter the cost of dry food for fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-        std::cin >> feed_kf[i];
+        set_feed(feed_kf[i], i);
         if (feed_kf[i] == -1) {
             feed_kf[i] = get_feedkf();
         }
-        std::cout << "Enter the price of fish from pond " << i + 1 << " under contract " << 0 + 1 << ": \n";
-        std::cin >> prices[i];
+        set_price(prices[i], i);
         if (prices[i] == -1) {
             prices[i] = get_price() + feed_kf[i];
         }
@@ -253,18 +287,14 @@ signed main() {
         }
         for (int j = 0; j < k; ++j) {
             if (ponds[j].get_na() > amount[ponds[j].get_ind()]) {
-//                std::cout << 0 << "\n";
                 double kf = 1.0 - std::min(1.0, s / 4.0 / k / ponds[j].feed_price());
                 ponds[j].reduce(kf);
                 s -= std::min(ponds[j].feed_price(), s / 4 / k);
             } else if (ponds[j].feed_price() > s) {
-//                std::cout << ponds[j].feed_price() << " " << ponds[j].get_na() << " " << ponds[j].get_ny() << " " << feed_kf[ponds[j].get_ind()] << " " << s << "\n";
-//                std::cout << 1 << "\n";
                 double kf = 1.0 - s * 1.0 / ponds[j].feed_price();
                 ponds[j].reduce(kf);
                 s = 0;
             } else {
-//                std::cout << 2 << "\n";
                 s -= ponds[j].feed_price();
             }
             ponds[j].iterate();
@@ -278,21 +308,23 @@ signed main() {
         }
         int fn = 0;
         for (int j = 0; j < k; ++j) {
-//            std::cout << j << " " << ponds[j].get_na() << " " << ponds[j].get_ny() << "\n";
             if (ponds[pos[j]].get_na() < amount[j]) {
                  fn += fine[j];
             } else {
                 ponds[pos[j]].set_na(ponds[pos[j]].get_na() - amount[j]);
                 s += prices[j] * amount[j];
             }
-//            std::cout << j << " " << ponds[j].get_na() << " " << ponds[j].get_ny() << "\n";
         }
         s -= fn;
+        std::cout << "Your balance after the " << i + 1 << " week is " << s << "!\n";
         if (s < 0) {
             std::cout << "You're a bankrupt((\n";
-            return 0;
+            return;
         }
-        std::cout << "Your balance after the " << i + 1 << " week is " << s << "!\n";
     }
     std::cout << "Your final balance is " << s << "!\n";
+}
+
+signed main() {
+    run();
 }
