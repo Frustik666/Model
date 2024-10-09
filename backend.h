@@ -83,20 +83,10 @@ int get_price();
 
 int get_feedkf();
 
-void set_k(int& k);
+void set_k(int k0);
 
-void set_m(int& m);
+void set_m(int m0);
 
-void set_balance(int& s);
-
-void set_number(int& n, int i);
-
-void set_amount(int& a, int i);
-
-void set_fine(int& f, int i);
-
-void set_feed(int& kf, int i);
-
-void set_price(int& p, int i);
+void set_balance(int s0);
 
 void run();
