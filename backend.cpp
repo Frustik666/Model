@@ -236,7 +236,7 @@ void run() {
     while ((int)ponds.size() > k) ponds.pop_back();
     std::vector<int> pos(k);
     std::iota(pos.begin(), pos.end(), 0);
-    int n = m / 3;
+    int n = (m + 2) / 3;
     int cns = rd() % n + 1;
     std::vector<std::vector<Accident>> tms(n);
     for (int i = 0; i < cns; ++i) {
