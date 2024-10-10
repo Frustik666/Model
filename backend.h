@@ -89,4 +89,16 @@ void set_m(int m0);
 
 void set_balance(int s0);
 
+int get_k();
+
+int get_m();
+
+int get_balance();
+
+int get_na(int i);
+
+int get_ny(int i);
+
+std::vector<std::vector<int>> get_contract();
+
 void run();

@@ -161,6 +161,17 @@ void set_balance(int s0) {
     s = s0;
 }
 
+int get_k() {
+    return k;
+}
+
+int get_m() {
+    return m;
+}
+
+int get_balance() {
+    return s;
+}
 //0 - start, 1 - amount, 2 - price, 3 - feed
 
 void set_contrct(std::vector<std::vector<int>>& cont) {
@@ -185,6 +196,27 @@ void set_contrct(std::vector<std::vector<int>>& cont) {
         }
     }
 }
+
+int get_na(int i) {
+    return ponds[i].get_na();
+}
+
+int get_ny(int i) {
+    return ponds[i].get_ny();
+}
+
+std::vector<std::vector<int>> get_contract() {
+    std::vector<std::vector<int>> ret(k, std::vector<int>(5));
+    for (int i = 0; i < k; ++i) {
+        ret[i][0] = ponds[i].get_ny();
+        ret[i][1] = ponds[i].get_na();
+        ret[i][2] = amount[i];
+        ret[i][3] = prices[i];
+        ret[i][4] = feed_kf[i];
+    }
+    return ret;
+}
+
 
 void run() {
     std::vector<std::string> names{"Cod", "Carp", "Salmon", "Trout", "Catfish", "Shark", "Clownfish"};
