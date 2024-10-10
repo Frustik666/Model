@@ -266,8 +266,8 @@ void run() {
             for (auto& acc : tms[i / 3]) {
                 std::cout << "A " << acc.get_name() << " occured! " << (int)(acc.get_perc() * 100) <<
                 " percent of fish died(((\n";
-                for (auto& pnd : ponds) {
-                    pnd.reduce(acc.get_perc());
+                for (int j = 0; j < k; ++j) {
+                    ponds[j].reduce(acc.get_perc());
                 }
             }
             std::sort(ponds.begin(), ponds.end());
