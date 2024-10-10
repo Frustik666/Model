@@ -147,6 +147,7 @@ int get_feedkf() {
 
 int k, m, s;
 std::vector<int> prices(7), amount(7), fine(7), feed_kf(7);
+std::vector<std::vector<std::vector<int>>> data;
 std::vector<Pond> ponds(7);
 
 void set_k(int k0) {
@@ -217,6 +218,10 @@ std::vector<std::vector<int>> get_contract() {
     return ret;
 }
 
+std::vector<std::vector<std::vector<int>>> get_data() {
+    return data;
+}
+
 
 void run() {
     std::vector<std::string> names{"Cod", "Carp", "Salmon", "Trout", "Catfish", "Shark", "Clownfish"};
@@ -243,8 +248,10 @@ void run() {
     for (int j = 0; j < k; ++j) {
         pos[ponds[j].get_ind()] = j;
     }
+
     for (int i = 0; i < m; ++i) {
         if (i % 3 == 0) {
+            data.push_back(get_contract());
             if (i) {
                 for (int j = 0; j < k; ++j) {
                     prices[j] = prices[j] * 1.0 * get_dif();
@@ -302,10 +309,12 @@ void run() {
         std::cout << "Your balance after the " << i + 1 << " week is " << std::max(0, s) << "!\n";
         if (s < 0) {
             std::cout << "You're a bankrupt((\n";
-            return;
+            break;
         }
     }
+    data.push_back(get_contract());
     std::cout << "Your final balance is " << s << "!\n";
+
 }
 
 signed main() {

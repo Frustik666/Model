@@ -99,6 +99,10 @@ int get_na(int i);
 
 int get_ny(int i);
 
+void set_contrct(std::vector<std::vector<int>>& cont);
+
+std::vector<std::vector<std::vector<int>>> get_data();
+
 std::vector<std::vector<int>> get_contract();
 
 void run();
