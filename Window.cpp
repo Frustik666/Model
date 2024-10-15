@@ -7,7 +7,11 @@ Window::Window(int length, int height) {
     setMaximumSize(length, height);
 }
 
-Window::~Window() = default;
+Window::~Window() {
+    for (auto& to : widgets_) {
+        delete to.second;
+    }
+}
 
 void Window::mousePressEvent(QMouseEvent *event) {
     std::cout << event->pos().rx() << ' ' << event->pos().ry() << '\n';

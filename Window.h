@@ -9,15 +9,12 @@ public:
     Window();
     ~Window() override;
     void mousePressEvent(QMouseEvent *event) override;
-    QWidget* getWidget(QWidget*, const std::string& name) {
-
-    }
 
     void addItem(const std::string& name, QWidget* item) {
-        widgets_.insert({name, item});
+        widgets_[name] = item;
     }
 
-    QWidget* getItem(const std::string& name) {
+    QWidget*& getItem(const std::string& name) {
         return widgets_[name];
     }
 

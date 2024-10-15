@@ -268,6 +268,12 @@
 			"EWIEGA46WW/moc_Window.cpp",
 			null
 		],
+		[
+			"C:/Users/ASUS/Model/backend.h",
+			"MU",
+			"EWIEGA46WW/moc_backend.cpp",
+			null
+		],
 		[ "C:/Users/ASUS/Model/lib.h", "MU", "EWIEGA46WW/moc_lib.cpp", null ]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
@@ -345,6 +351,7 @@
 		[ "C:/Users/ASUS/Model/Label.cpp", "MU", null ],
 		[ "C:/Users/ASUS/Model/Screen.cpp", "MU", null ],
 		[ "C:/Users/ASUS/Model/Window.cpp", "MU", null ],
+		[ "C:/Users/ASUS/Model/backend.cpp", "MU", null ],
 		[ "C:/Users/ASUS/Model/main.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],

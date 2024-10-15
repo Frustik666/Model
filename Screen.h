@@ -1,7 +1,7 @@
 #pragma once
 #include "Window.h"
 #include "Label.h"
-#include "lib.h"
+#include "backend.h"
 
 
  class Screen: public QMainWindow {
@@ -34,7 +34,7 @@ private slots:
     void step();
 
  private:
-     int ind_, col_;
+     int ind_, nowWeek_;
      Window* now_;
      Window* main_;
      Window* start_;
@@ -45,6 +45,7 @@ private slots:
      Window* pond_;
      Window* end_;
      std::vector<std::string> fishes_;
+     std::vector<std::vector<std::vector<int>>> data_;
     QTimer *timer_, *del_;
 
 

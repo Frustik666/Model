@@ -89,6 +89,14 @@ build CMakeFiles/Model.dir/Label.cpp.obj: CXX_COMPILER__Model_unscanned_Debug C$
   OBJECT_DIR = CMakeFiles\Model.dir
   OBJECT_FILE_DIR = CMakeFiles\Model.dir
 
+build CMakeFiles/Model.dir/backend.cpp.obj: CXX_COMPILER__Model_unscanned_Debug C$:/Users/ASUS/Model/backend.cpp || cmake_object_order_depends_target_Model
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -DWINVER=0x0A00 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64
+  DEP_FILE = CMakeFiles\Model.dir\backend.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem C:/Users/ASUS/Model/cmake-build-debug/Model_autogen/include -isystem C:/msys64/mingw64/include/qt6/QtCore -isystem C:/msys64/mingw64/include/qt6 -isystem C:/msys64/mingw64/share/qt6/mkspecs/win32-g++ -isystem C:/msys64/mingw64/include/qt6/QtGui -isystem C:/msys64/mingw64/include/qt6/QtWidgets
+  OBJECT_DIR = CMakeFiles\Model.dir
+  OBJECT_FILE_DIR = CMakeFiles\Model.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Model
@@ -97,7 +105,7 @@ build CMakeFiles/Model.dir/Label.cpp.obj: CXX_COMPILER__Model_unscanned_Debug C$
 #############################################
 # Link the executable Model.exe
 
-build Model.exe: CXX_EXECUTABLE_LINKER__Model_Debug CMakeFiles/Model.dir/Model_autogen/mocs_compilation.cpp.obj CMakeFiles/Model.dir/main.cpp.obj CMakeFiles/Model.dir/Screen.cpp.obj CMakeFiles/Model.dir/Window.cpp.obj CMakeFiles/Model.dir/Label.cpp.obj | C$:/msys64/mingw64/lib/libQt6Widgets.dll.a C$:/msys64/mingw64/lib/libQt6Gui.dll.a C$:/msys64/mingw64/lib/libQt6Core.dll.a || Model_autogen Model_autogen_timestamp_deps
+build Model.exe: CXX_EXECUTABLE_LINKER__Model_Debug CMakeFiles/Model.dir/Model_autogen/mocs_compilation.cpp.obj CMakeFiles/Model.dir/main.cpp.obj CMakeFiles/Model.dir/Screen.cpp.obj CMakeFiles/Model.dir/Window.cpp.obj CMakeFiles/Model.dir/Label.cpp.obj CMakeFiles/Model.dir/backend.cpp.obj | C$:/msys64/mingw64/lib/libQt6Widgets.dll.a C$:/msys64/mingw64/lib/libQt6Gui.dll.a C$:/msys64/mingw64/lib/libQt6Core.dll.a || Model_autogen Model_autogen_timestamp_deps
   FLAGS = -g
   LINK_LIBRARIES = C:/msys64/mingw64/lib/libQt6Widgets.dll.a  C:/msys64/mingw64/lib/libQt6Gui.dll.a  C:/msys64/mingw64/lib/libQt6Core.dll.a  -lmpr  -luserenv  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Model.dir

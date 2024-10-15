@@ -21,7 +21,9 @@ add_executable(Model main.cpp
         Window.h
         Window.cpp
         Label.h
-        Label.cpp)
+        Label.cpp
+        backend.cpp
+        backend.h)
 target_link_libraries(Model
         Qt::Core
         Qt::Gui
