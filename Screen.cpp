@@ -17,19 +17,16 @@ Screen::Screen(int length, int height): QMainWindow() {
     QString font = QFontDatabase::applicationFontFamilies(id).at(0);
     ind_ = 0;
     main_ = new Window(length, height);
-    history_ = new Window(length, height);
     start_ = new Window(length, height);
     settings_ = new Window(length, height);
     house_ = new Window(length, height);
     table_ = new Window(length, height);
-    end_ = new Window(length, height);
     now_ = main_;
     QPixmap back("C:/Users/ASUS/Model/resources/House.png");
     back = back.scaled(main_->size(), Qt::IgnoreAspectRatio);
     QPalette palette;
     palette.setBrush(QPalette::Window,back);
     main_->setPalette(palette);
-    end_->setPalette(palette);
 
     auto label = new QLabel(main_);
     main_->addItem("START", label);
@@ -52,7 +49,7 @@ Screen::Screen(int length, int height): QMainWindow() {
 
     auto play = new QPushButton(main_);
     main_->addItem("PLAY", play);
-    play->setGeometry(333, 197, 333, 70);
+    play->setGeometry(333, 250, 333, 70);
     play->setText("ИГРАТЬ");
     play->setFont({font, 25});
     play->setStyleSheet("QPushButton {"
@@ -60,19 +57,9 @@ Screen::Screen(int length, int height): QMainWindow() {
                         "}");
     connect(play, SIGNAL(clicked()), this, SLOT(play()));
 
-//    auto history = new QPushButton(main_);
-//    main_->addItem("HISTORY", history);
-//    history->setGeometry(333, 300, 333, 70);
-//    history->setText("ИСТОРИЯ");
-//    history->setFont({font, 25});
-//    history->setStyleSheet("QPushButton {"
-//                        "background-color: rgba(41, 234, 247, 50);"
-//                        "}");
-//    connect(history, SIGNAL(clicked()), this, SLOT(toHistory()));
-
     auto exit = new QPushButton(main_);
     main_->addItem("EXIT", exit);
-    exit->setGeometry(333, 400, 333, 70);
+    exit->setGeometry(333, 350, 333, 70);
     exit->setText("ВЫХОД");
     exit->setFont({font, 25});
     exit->setStyleSheet("QPushButton {"
@@ -229,24 +216,6 @@ Screen::Screen(int length, int height): QMainWindow() {
     connect(goHome, SIGNAL(mousePressedSignal()), this, SLOT(PtoModel()));
 
 
-    auto labelE = new QLabel(end_);
-    end_->addItem("PLAY", labelE);
-    labelE->setGeometry(174, 42, 656, 120);
-    labelE->setFont(QFont(font, 25));
-    labelE->setAlignment(Qt::AlignCenter);
-    labelE->setText("МОДЕЛИРОВАНИЕ РЫБОВОДЧЕСКОГО ХОЗЯЙСТВА");
-    labelE->setStyleSheet("QLabel {"
-                          "background-color: rgba(41, 234, 247, 50);"
-                          "}");
-
-
-    auto sunE = new Label(end_);
-    end_->addItem("SUN", sunE);
-    sunE->setGeometry(0, 0, 150, 150);
-    sunE->setMovie(sunG);
-    connect(sunM, SIGNAL(mousePressedSignal()), this, SLOT(goToMain()));
-
-
     auto week = new Label(table_);
     table_->addItem("WEEK", week);
     week->setGeometry(174, 42, 656, 120);
@@ -266,10 +235,20 @@ void Screen::play() {
 }
 
 void Screen::step() {
-    if (nowWeek_ == get_m() - 1) return;
     house_->hide();
     ++nowWeek_;
-    if (get_balance()[nowWeek_] <= 0) return;
+    if (get_balance()[nowWeek_] <= 0) {
+        goToTable();
+        dynamic_cast<Label*>(table_->getItem("WEEK"))->setText("МОДЕЛИРОВАНИЕ ПРОВАЛЕНО");
+        table_->show();
+        return;
+    }
+    if (nowWeek_ == get_m() - 1) {
+        goToTable();
+        dynamic_cast<Label*>(table_->getItem("WEEK"))->setText("МОДЕЛИРОВАНИЕ ПРОШЛО УСПЕШНО");
+        table_->show();
+        return;
+    }
     auto night = new Label(house_);
     night->setGeometry(0, 0, 1000, 1000);
     night->setStyleSheet("QLabel {"
@@ -279,12 +258,6 @@ void Screen::step() {
     del_->start(2000);
     night->update();
     house_->show();
-}
-
-void Screen::toHistory() {
-    now_->hide();
-    now_ = history_;
-    render();
 }
 
 void Screen::goExit() {
@@ -345,6 +318,8 @@ void Screen::goToTable() {
     now_->hide();
     now_ = table_;
     dynamic_cast<Label*>(table_->getItem("WEEK"))->setText("НЕДЕЛЯ " + QString::number(nowWeek_ + 1));
+    int last = nowWeek_ - 1;
+    if (nowWeek_ == get_m() - 1) last = 0;
     for (int i = 0; i < get_k(); ++i) {
         Label *fish;
         if (table_->getItem("FISH" + std::to_string(i)) == nullptr) fish = new Label(table_);
@@ -353,7 +328,7 @@ void Screen::goToTable() {
         fish->setGeometry(200 + i * 100, 130, 90, 70);
         fish->setFont(QFont(font, 15));
         fish->setAlignment(Qt::AlignCenter);
-        fish->setText(QString::fromStdString(fishes_[i]) + ("(КГ)"));
+        fish->setText(QString::fromStdString(fishes_[i]));
         fish->setStyleSheet("QLabel {"
                             "color: white;"
                             "}");
@@ -366,7 +341,7 @@ void Screen::goToTable() {
         col->setAlignment(Qt::AlignCenter);
         auto s = QString::number(data_[nowWeek_][i][0] + data_[nowWeek_][i][1]);
         if (nowWeek_ != 0) {
-            int x = data_[nowWeek_][i][0] + data_[nowWeek_][i][1] - data_[nowWeek_ - 1][i][1] - data_[nowWeek_ - 1][i][0];
+            int x = data_[nowWeek_][i][0] + data_[nowWeek_][i][1] - data_[last][i][1] - data_[last][i][0];
             if (x > 0) {
                 s += "(+" + QString::number(x) + ")";
             }
@@ -385,9 +360,9 @@ void Screen::goToTable() {
         coly->setGeometry(200 + i * 100, 242, 90, 40);
         coly->setFont(QFont(font, 13));
         coly->setAlignment(Qt::AlignCenter);
-        s = QString::number(data_[nowWeek_][i][1]);
+        s = QString::number(data_[nowWeek_][i][0]);
         if (nowWeek_ != 0) {
-            int x = data_[nowWeek_][i][1] - data_[nowWeek_ - 1][i][1];
+            int x = data_[nowWeek_][i][0] - data_[last][i][0];
             if (x > 0) {
                 s += "(+" + QString::number(x) + ")";
             }
@@ -400,6 +375,7 @@ void Screen::goToTable() {
                            "color: white;"
                            "}");
 
+
         Label *cola;
         if (table_->getItem("COLA" + std::to_string(i)) == nullptr) cola = new Label(table_);
         else cola = dynamic_cast<Label*>(table_->getItem("COLA" + std::to_string(i)));
@@ -409,7 +385,7 @@ void Screen::goToTable() {
         cola->setAlignment(Qt::AlignCenter);
         s = QString::number(data_[nowWeek_][i][1]);
         if (nowWeek_ != 0) {
-            int x = data_[nowWeek_][i][1] - data_[nowWeek_ - 1][i][1];
+            int x = data_[nowWeek_][i][1] - data_[last][i][1];
             if (x > 0) {
                 s += "(+" + QString::number(x) + ")";
             }
@@ -431,7 +407,7 @@ void Screen::goToTable() {
         quota->setAlignment(Qt::AlignCenter);
         s = QString::number(data_[nowWeek_][i][2]);
         if (nowWeek_ != 0) {
-            int x = data_[nowWeek_][i][2] - data_[nowWeek_ - 1][i][2];
+            int x = data_[nowWeek_][i][2] - data_[last][i][2];
             if (x > 0) {
                 s += "(+" + QString::number(x) + ")";
             }
@@ -453,7 +429,7 @@ void Screen::goToTable() {
         cost->setAlignment(Qt::AlignCenter);
         s = QString::number(data_[nowWeek_][i][3]);
         if (nowWeek_ != 0) {
-            int x = data_[nowWeek_][i][3] - data_[nowWeek_ - 1][i][3];
+            int x = data_[nowWeek_][i][3] - data_[last][i][3];
             if (x > 0) {
                 s += "(+" + QString::number(x) + ")";
             }
@@ -475,7 +451,7 @@ void Screen::goToTable() {
         food->setAlignment(Qt::AlignCenter);
         s = QString::number(data_[nowWeek_][i][4]);
         if (nowWeek_ != 0) {
-            int x = data_[nowWeek_][i][4] - data_[nowWeek_ - 1][i][4];
+            int x = data_[nowWeek_][i][4] - data_[last][i][4];
             if (x > 0) {
                 s += "(+" + QString::number(x) + ")";
             }
@@ -493,10 +469,10 @@ void Screen::goToTable() {
     if (table_->getItem("COL") == nullptr) col = new Label(table_);
     else col = dynamic_cast<Label*>(table_->getItem("COL"));
     table_->addItem("COL", col);
-    col->setGeometry(80, 182, 100, 40);
+    col->setGeometry(80, 182, 160, 40);
     col->setFont(QFont(font, 15));
     //col->setAlignment(Qt::AlignCenter);
-    col->setText("КОЛ ВСЕХ");
+    col->setText("КОЛ ВСЕХ(КГ)");
     col->setStyleSheet("QLabel {"
                        "color: white;"
                        "}");
@@ -505,10 +481,10 @@ void Screen::goToTable() {
     if (table_->getItem("COLY") == nullptr) coly = new Label(table_);
     else coly = dynamic_cast<Label*>(table_->getItem("COLY"));
     table_->addItem("COLY", coly);
-    coly->setGeometry(80, 240, 100, 40);
+    coly->setGeometry(80, 240, 160, 40);
     coly->setFont(QFont(font, 15));
     //col->setAlignment(Qt::AlignCenter);
-    coly->setText("КОЛ МАЛЬ");
+    coly->setText("КОЛ МАЛЬ(КГ)");
     coly->setStyleSheet("QLabel {"
                        "color: white;"
                        "}");
@@ -517,10 +493,10 @@ void Screen::goToTable() {
     if (table_->getItem("COLA") == nullptr) cola = new Label(table_);
     else cola = dynamic_cast<Label*>(table_->getItem("COLA"));
     table_->addItem("COLA", cola);
-    cola->setGeometry(80, 300, 100, 40);
+    cola->setGeometry(80, 300, 160, 40);
     cola->setFont(QFont(font, 15));
     //col->setAlignment(Qt::AlignCenter);
-    cola->setText("КОЛ ВЗР");
+    cola->setText("КОЛ ВЗР(КГ)");
     cola->setStyleSheet("QLabel {"
                         "color: white;"
                         "}");
@@ -529,10 +505,10 @@ void Screen::goToTable() {
     if (table_->getItem("QUOTA") == nullptr) quota = new Label(table_);
     else quota = dynamic_cast<Label*>(table_->getItem("QUOTA"));
     table_->addItem("QUOTA", quota);
-    quota->setGeometry(80, 360, 100, 40);
+    quota->setGeometry(80, 360, 160, 40);
     quota->setFont(QFont(font, 15));
     //col->setAlignment(Qt::AlignCenter);
-    quota->setText("КВОТА");
+    quota->setText("КВОТА(КГ)");
     quota->setStyleSheet("QLabel {"
                         "color: white;"
                         "}");
@@ -541,10 +517,10 @@ void Screen::goToTable() {
     if (table_->getItem("COST") == nullptr) cost = new Label(table_);
     else cost = dynamic_cast<Label*>(table_->getItem("COST"));
     table_->addItem("COST", cost);
-    cost->setGeometry(80, 420, 100, 40);
+    cost->setGeometry(80, 420, 160, 40);
     cost->setFont(QFont(font, 15));
     //col->setAlignment(Qt::AlignCenter);
-    cost->setText("ЦЕНА РЫБЫ");
+    cost->setText("ЦЕНА РЫБЫ(РУБ)");
     cost->setStyleSheet("QLabel {"
                          "color: white;"
                          "}");
@@ -553,10 +529,10 @@ void Screen::goToTable() {
     if (table_->getItem("FOOD") == nullptr) food = new Label(table_);
     else food = dynamic_cast<Label*>(table_->getItem("FOOD"));
     table_->addItem("FOOD", food);
-    food->setGeometry(80, 480, 100, 40);
+    food->setGeometry(80, 480, 160, 40);
     food->setFont(QFont(font, 15));
     //col->setAlignment(Qt::AlignCenter);
-    food->setText("ЦЕНА КОРМА");
+    food->setText("ЦЕНА КОРМА(РУБ)");
     food->setStyleSheet("QLabel {"
                         "color: white;"
                         "}");
@@ -568,9 +544,9 @@ void Screen::goToTable() {
     capital->setGeometry(80, 540, 300, 40);
     capital->setFont(QFont(font, 15));
     //col->setAlignment(Qt::AlignCenter);
-    QString s = "КАПИТАЛ: " + QString::number(get_balance()[nowWeek_]);
+    QString s = "КАПИТАЛ(РУБ): " + QString::number(get_balance()[nowWeek_]);
     if (nowWeek_ != 0) {
-        int x = get_balance()[nowWeek_] - get_balance()[nowWeek_ - 1];
+        int x = get_balance()[nowWeek_] - get_balance()[last];
         if (x > 0) {
             s += "(+" + QString::number(x) + ")";
         }
@@ -582,6 +558,37 @@ void Screen::goToTable() {
     capital->setStyleSheet("QLabel {"
                         "color: white;"
                         "}");
+
+    Label *AllCapital;
+    if (table_->getItem("ACAPITAL") == nullptr) AllCapital = new Label(table_);
+    else AllCapital = dynamic_cast<Label*>(table_->getItem("ACAPITAL"));
+    table_->addItem("ACAPITAL", AllCapital);
+    AllCapital->setGeometry(80, 600, 300, 40);
+    AllCapital->setFont(QFont(font, 15));
+    //col->setAlignment(Qt::AlignCenter);
+    s = "СОСТОЯНИЕ(РУБ): ";
+    int64_t cap = get_balance()[nowWeek_];
+    for (const auto& ponds : data_[nowWeek_]) {
+        cap += ponds[3] * (ponds[0] + ponds[1]);
+     }
+    s += QString::number(cap);
+    if (nowWeek_ != 0) {
+        int64_t capp = get_balance()[last];
+        for (const auto& ponds : data_[last]) {
+            capp += ponds[3] * (ponds[0] + ponds[1]);
+        }
+        int64_t x = cap - capp;
+        if (x > 0) {
+            s += "(+" + QString::number(x) + ")";
+        }
+        if (x < 0) {
+            s += "(" + QString::number(x) + ")";
+        }
+    }
+    AllCapital->setText(s);
+    AllCapital->setStyleSheet("QLabel {"
+                           "color: white;"
+                           "}");
 
 
     now_->show();
@@ -648,6 +655,9 @@ void Screen::next() {
 
 void Screen::PtoModel() {
     now_->hide();
+    if (nowWeek_== get_m() - 1 || get_balance()[nowWeek_] <= 0) {
+        exit(0);
+    }
     now_ = house_;
     now_->show();
 }
@@ -810,8 +820,10 @@ void Screen::toSettings() {
 Screen::~Screen() {
     delete main_;
     delete start_;
-    delete history_;
+    delete settings_;
     delete house_;
     delete table_;
     delete pond_;
+    delete timer_;
+    delete del_;
 }

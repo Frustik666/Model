@@ -127,7 +127,7 @@ int get_amount() {
 }
 
 int get_col() {
-    int r = rd() % 8 + 3;
+    int r = rd() % 300 + 80;
     return r;
 }
 

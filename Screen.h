@@ -19,7 +19,6 @@
 private slots:
 
     void play();
-    void toHistory();
     static void goExit();
     void goToMain();
     void toSettings();
@@ -38,12 +37,10 @@ private slots:
      Window* now_;
      Window* main_;
      Window* start_;
-     Window* history_;
      Window* settings_;
      Window* house_;
      Window* table_;
      Window* pond_;
-     Window* end_;
      std::vector<std::string> fishes_;
      std::vector<std::vector<std::vector<int>>> data_;
     QTimer *timer_, *del_;
